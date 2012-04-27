@@ -33,6 +33,9 @@ T	:	D		//声明语句
 	|	PRINT	//print语句
 	;
 	
+D	:	TYPE ID		//声明变量
+	;
+	
 TYPE	:
 		| TBOOL
 		| INT
