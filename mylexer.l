@@ -1,4 +1,5 @@
 %{
+#include <string.h>
 #include "myparser.h"
 #include "struct.h"
 int linenum;
@@ -26,7 +27,7 @@ space		[" "\t]
 
 "<"|">"|"!"			return yytext[0];
 
-";"|"="|"("|")"|"["|"]"		return yytext[0];
+"="|"("|")"|"["|"]"|";"|","		return yytext[0];
 
 "false"			{yylval=newBOOL(false); return BOOL;}
 

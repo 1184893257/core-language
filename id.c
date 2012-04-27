@@ -18,12 +18,15 @@ static LIdList ids;		//声明列表
 static LIdList *tail;	//声明列表的尾部,供插入声明使用
 static char *idheap;	//变量最终的存储空间
 
+void idinit()
+{
+	tail=&ids;
+}
+
 //声明一个变量,将变量名,类型记录在列表中,确定变量在变量堆中的位置
 void declare(int type, char *name)
 {
 	LIdList t;
-
-	if(!tail) tail=&ids;
 
 	t=(LIdList)malloc(sizeof(IdList));
 	t->type=type;

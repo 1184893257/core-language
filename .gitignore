@@ -1,3 +1,7 @@
 /Debug
 Corelanguage*
 *.v
+mylexer.c
+mylexer.h
+myparser.c
+myparser.h

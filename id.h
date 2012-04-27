@@ -2,6 +2,8 @@
 #define _MYID_
 #include "struct.h"
 //############此文件存放变量的各种操作###############
+//初始化
+void idinit();
 
 //声明变量
 void declare(int type, char *name);
