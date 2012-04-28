@@ -1,45 +1,95 @@
 %{
 #include "mylexer.h"
 #include "struct.h"
+#include "id.h"
 #define YYSTYPE LTree
 %}
 
 %token	ID				//变量名称
 %token	NUM BOOL STRING		//这是常量类型
-%token	TBOOL INT			//这都是变量类型
+%token	TBOOL INT 			//这都是变量类型
 %token	EQUAL AND OR		//多字符的操作符
+%token	IF ELSE WHILE		//由于识别分支，循环语句
+%token	NEG IFU IFF MULTI	//用于识别负号、不完整if、完整if和多条语句
+%token	PRINT				//提供print方法
+
+%right	'!'
+%left	'*'
+%left	'+''-'
+%left	'<''>'
+%left	EQUAL
+%left	AND 
+%left	OR
+%left	'=' 
 
 %%
 
-L	:
-	|	L '='	{printf("赋值\n");}
-	|	L NUM	{printf("NUM:%d\n",$2->val.intval);}
-	|	L ID	{printf("ID\n");}
-	|	L BOOL	{printf("BOOL\n");}
-	|	L '+'	{printf("add\n");}
-	|	L ';'	{printf("end of a exp\n");}
-	|	L STRING	{$$=$1;}
-	|	L INT	{printf("val type:int\n");}
-	|	L TBOOL	{printf("val type:bool\n");}
-	;
+S:
+ |D		//声明语句
+ |E		//执行语句
+ ;
 
-//T是一条语句
-T	:	D		//声明语句
-	|	I		//返回值为整数的语句
-	|	B		//返回值为布尔的语句
-	|	AR		//返回值为数组的语句
-	|	IFELSE	//if else 条件语句
-	|	WHILE	//while 循环语句
-	|	PRINT	//print语句
-	;
-	
-D	:	TYPE ID		//声明变量
-	;
-	
-TYPE	:
-		| TBOOL
-		| INT
-		;
+D:
+ |INT ID	{declare(INT,$2->val.strval);}
+ |TBOOL ID	{declare(TBOOL,$2->val.strval);}
+ ;
+
+E:
+ |Q		//单行语句
+ |M		//多行语句
+ ;
+ 
+Q:
+ |I		//整形类运算
+ |B		//BOOL类运算
+ |ID '=' T	{buildTree('=',$1,$3);}			//T可以是整形，也可以是BOOL，赋值操作单独弄出来比较好
+ |F		//IF语句
+ |W		//WHILE语句
+ ;
+
+M:
+ |'{' L '}'	//L里面是真正的多行语句
+ ;
+ 
+L:
+ |L ';' Q		{buildTree(MULTI,$1,$3);}
+ |Q				{$$=$1;}
+ ;
+ 
+T:
+ |I
+ |B
+ ;
+ 
+I:
+ |I '+' I	    {buildTree('+',$1,$3);}
+ |I '-' I		{buildTree('-',$1,$3);}
+ |I '*' I		{buildTree('*',$1,$3);}
+ |'-' I			{buildTree(NEG,$1);}
+ |'(' I ')'		{$$=$2;}
+ |NUM			{$$=$1;}
+ |ID			{$$=$1;}
+ ;
+ 
+B:
+ |'!' B			{buildTree('!',$2);}
+ |B OR B		{buildTree(OR,$1,$3);}
+ |B EQUAL B		{buildTree(EQUAL,$1,$3);}
+ |B AND B		{buildTree(AND,$1,$3);}
+ |I '<' I		{buildTree('<',$1,$3);}
+ |I '>' I		{buildTree('>',$1,$3);}
+ |BOOL			{$$=$1;}
+ |ID			{$$=$1;}
+ ;
+ 
+F:
+ |IF '(' B ')' E			{buildTree(IFU,$3,$5);}
+ |IF '(' B ')' E ELSE E		{buildTree(IFF,$3,$5,$7);}
+ ;
+ 
+W:
+ |WHILE'(' B ')' E			{buildTree(WHILE,$3,$5);}
+ ;
 
 %%
 

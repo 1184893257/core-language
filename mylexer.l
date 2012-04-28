@@ -19,6 +19,8 @@ space		[" "\t]
 
 "=="			return EQUAL;
 
+"!="			return NOTEQUAL;
+
 "&&"			return AND;
 
 "||"			return OR;
@@ -27,7 +29,9 @@ space		[" "\t]
 
 "<"|">"|"!"			return yytext[0];
 
-"="|"("|")"|"["|"]"|";"|","		return yytext[0];
+"="|"("|")"|"["|"]"	return yytext[0];
+
+";"|","|":"			return yytext[0];
 
 "false"			{yylval=newBOOL(false); return BOOL;}
 
@@ -36,6 +40,8 @@ space		[" "\t]
 "int"			return INT;
 
 "bool"			return TBOOL;
+
+"print"			return PRINT;
 	
 ("_"|{char})({char}|"_"|{digit})*	{
 		yylval=newID(yytext);
