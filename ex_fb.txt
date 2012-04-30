@@ -1,0 +1,26 @@
+/*循环的斐波拉切数组
+*/
+
+int i;
+int []fb;
+int size;
+
+size=20;	/*所求斐波拉切数列的长度*/
+
+fb=new [size];		/*可以动态*/
+fb[0]=fb[1]=1;
+
+i=2;
+while(i<size)
+{
+  fb[i]=fb[i-1]+fb[i-2];
+  i=i+1;
+}
+i=0;
+print:"斐波拉切数列:\n";
+while(i<size)
+{
+  print:"%d,",fb[i];
+  i=i+1;
+}
+print:"\n";

@@ -5,8 +5,8 @@
 //初始化
 void idinit();
 
-//声明变量
-void declare(int type, char *name);
+//声明变量,type是包含类型的树,name是包含变量名的树
+void declare(LTree type, LTree name);
 
 //引用变量
 void refer(LTree idTree);
@@ -20,12 +20,15 @@ void putvalue(LTree idTree, Type value);
 //读变量的值
 Type getvalue(LTree idTree);
 
-//声明数组,尚未完工
-void declareArray(int type, char *name);
+//声明数组
+void declareArray(LTree type, LTree name);
 
-//引用数组, id是存有数组名字的节点, offset是能算出数组下标的树,尚未完工
-void referArray(LTree id, LTree offset);
+//引用数组, array是存有数组名字的节点, offset是能算出数组下标的树
+void referArray(LTree array, LTree offset);
 
-//给数组申请新的空间,array是数组ID节点,size是返回值为整数的运算树,尚未完工
-void newArray(LTree array, LTree size);
+//给数组申请新的空间,array是数组ID节点,size是返回值为整数的运算树
+LTree newArray(LTree array, LTree size);
+
+//执行NEW节点,给数组重新申请空间
+void arrayNewSize(LTree node);
 #endif

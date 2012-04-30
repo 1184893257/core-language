@@ -36,10 +36,16 @@ LTree newBOOL(bool val);
 LTree newNUM(int num);
 
 //建立STRING常量叶子
-LTree newSTRING(char *name);
+LTree newSTRING(const char *name);
 
 //建立ID叶子
 LTree newID(char *name);
+
+//只是用于声明的时候统一代码,临时建立的树
+LTree newTYPE(int type);
+
+//建立一颗不含语义的树,只是为了连接与它平行的语法树
+LTree newNOP();
 
 //建立一棵类型为type(记号类型)的树, type后跟多个类型也是LTree的孩子
 LTree buildTree(int type, ...);

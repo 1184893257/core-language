@@ -1,0 +1,6 @@
+int a;
+bool b;
+
+b=true;
+a=b;
+print:"a=%d b=%s\n",a,b;

@@ -1,0 +1,15 @@
+/*≤‚ ‘≥Ã–Ú,≤‚ ‘if else
+*/
+
+int t;
+
+t=0;
+while(t<3){
+  if(t==0)
+    print:"t==0\n";
+  else if(t==1)
+    print:"t==1\n";
+  else if(t==2)
+    print:"t==2\n";
+  t=t+1;
+}
