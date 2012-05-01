@@ -1,0 +1,21 @@
+/*≤‚ ‘break,continue
+*/
+
+int a;
+
+a=0;
+while(a<10)
+{
+  a=a+1;
+  if(a==5) break;
+}
+
+print:"a:%d\n",a;
+
+while((a=a-1)>0)
+{
+  if(a>2) continue;
+  break;
+}
+
+print:"a:%d\n",a;

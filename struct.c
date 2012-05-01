@@ -123,6 +123,42 @@ LTree newNOP()
 	return ans;
 }
 
+extern int loopdeep;	//在yacc中定义
+extern int linenum;		//在lex中定义
+extern int errors;		//在yacc中定义
+
+LTree newBREAK()
+{
+	LTree ans;
+	if(loopdeep<=0)
+	{
+		printf("line %d:<语义错误>在非循环语句中使用break\n",linenum);
+		errors++;
+		return newNOP();
+	}
+	ans=(LTree)malloc(sizeof(Tree));
+	ans->type=BREAK;
+	ans->bro=ans->chi=NULL;
+	ans->returnType=NORETURN;
+	return ans;
+}
+
+LTree newCONTINUE()
+{
+	LTree ans;
+	if(loopdeep<=0)
+	{
+		printf("line %d:<语义错误>在非循环语句中使用continue\n",linenum);
+		errors++;
+		return newNOP();
+	}
+	ans=(LTree)malloc(sizeof(Tree));
+	ans->type=CONTINUE;
+	ans->bro=ans->chi=NULL;
+	ans->returnType=NORETURN;
+	return ans;
+}
+
 LTree buildTree(int type, ...)
 {
 	va_list args;	//可变参数

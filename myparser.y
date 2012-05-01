@@ -16,6 +16,8 @@ extern char linebuf[];	//缓存的源程序
 
 int errors;				//检查出的错误的个数
 
+int loopdeep;			//while循环的深度,用于判定break和continue是否合法
+
 LTree errHandle();		//下面定义了,在单行语句错误的时候调用
 %}
 
@@ -31,6 +33,8 @@ LTree errHandle();		//下面定义了,在单行语句错误的时候调用
 %token	MAIN				//root的节点类型
 %token	NOP					//空语句,完全的if else中,如果if后跟的是空语句,
 							//就断了,连不上else的语句块了,所以设置个空语句
+							
+%token	BREAK CONTINUE		//加入这两个记号,语言就完美了
 
 %right	'='
 %left	OR
@@ -70,6 +74,8 @@ Q:	I ';'	//整形或布尔运算
 	|W		//WHILE语句
 	|P		//print语句
 	|A 		//new数组
+	|BREAK ';'		{$$=newBREAK();}//break语句
+	|CONTINUE ';'	{$$=newCONTINUE();}//continue语句
 	|error ';'	{$$=errHandle();}		//这里进行错误处理
 	|error '}'	{$$=errHandle();}
 	;
@@ -116,7 +122,7 @@ F:	IF '(' I ')' E				{$$=buildTree(IFU,$3,$5);}		//不完全匹配
 	;
 
 //while循环
-W:	WHILE'(' I ')' E			{$$=buildTree(WHILE,$3,$5);}
+W:	WHILE {loopdeep++;} '(' I ')' E			{$$=buildTree(WHILE,$4,$6); loopdeep--;}
 	;
 
 //print语句
@@ -135,7 +141,7 @@ LTree errHandle()
 	errors++;
 	yyclearin();
 	yyerrok();
-	printf("line:%d:<语法错误>\n",linenum+1);
+	printf("line %d:<语法错误>\n",linenum+1);
 	printf("%s\n%*s\n",linebuf,tokenpos-tokenleng+1,"^");
 	return newNOP();
 }

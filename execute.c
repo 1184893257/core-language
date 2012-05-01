@@ -4,6 +4,9 @@
 #include "id.h"
 #include "print.h"
 
+static bool breaksig;		//break信号
+static bool continuesig;	//continue信号
+
 Type do_solve(LTree root)
 {
 	Type ans,t1,t2;
@@ -13,6 +16,12 @@ Type do_solve(LTree root)
 	{
 	//NOP
 	case NOP: break;	//直接被忽略了
+
+	//置BREAK信号为true
+	case BREAK: breaksig=true; break;
+
+	//置CONTINUE信号为true
+	case CONTINUE: continuesig=true; break;
 
 	//NEW
 	case NEW:
@@ -24,7 +33,11 @@ Type do_solve(LTree root)
 	//多行语句
 	case MULTI2:
 		for(c1=root->chi;c1;c1=c1->bro)
+		{
 			do_solve(c1);
+			if(breaksig==true || continuesig==true)
+				break;	//break就行,while来置这些信号为false
+		}
 		break;
 
 	//while
@@ -32,7 +45,19 @@ Type do_solve(LTree root)
 		c1=root->chi;
 		c2=c1->bro;
 		while(do_solve(c1).boolval==true)
+		{
 			do_solve(c2);
+			if(breaksig==true)
+			{
+				breaksig=false;
+				break;
+			}
+			else if(continuesig==true)
+			{
+				continuesig=false;
+				continue;
+			}
+		}
 		break;
 
 	//不完全匹配的if else

@@ -44,8 +44,14 @@ LTree newID(char *name);
 //只是用于声明的时候统一代码,临时建立的树
 LTree newTYPE(int type);
 
-//建立一颗不含语义的树,只是为了连接与它平行的语法树
+//建立一颗不含语义的树,只是为了连接与它平行的语法树,也用于替换错误的语法树
 LTree newNOP();
+
+//建立一棵能退出循环的树
+LTree newBREAK();
+
+//建立一颗丢弃剩余的多条语句继续执行while循环的树
+LTree newCONTINUE();
 
 //建立一棵类型为type(记号类型)的树, type后跟多个类型也是LTree的孩子
 LTree buildTree(int type, ...);

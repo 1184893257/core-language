@@ -1,0 +1,72 @@
+/*斐波拉切数列的递归解法,
+递归都可以转化为循环+栈的模式,
+栈可以用数组+下标的方式实现,
+循环都可以使用while实现
+*/
+int pos;
+int []stack;
+int size;
+
+int returnval;
+int i;
+int status;
+int ans;
+
+pos=0;
+returnval=0;
+status=0;
+ans=0;
+
+size=1024;
+stack=new [size];
+
+i=0;
+while(i<20)
+{
+status=0;
+while(!(status==3))
+{
+  if(status==0)
+  {
+    if(i<0){ returnval=0; status=3; continue;}
+    if(i<2)
+    {
+      returnval=1;
+      if(pos==0) status=3;
+      else
+      {
+        ans=stack[pos=pos-1];  /*pop*/
+        status=stack[pos=pos-1];
+        i=stack[pos=pos-1];
+      }
+      continue;
+    }
+    stack[pos]=i; pos=pos+1;  /*push*/
+    stack[pos]=1; pos=pos+1;
+    stack[pos]=0; pos=pos+1;
+    i=i-2;
+  }
+  else if(status==1)
+  {
+    ans=returnval;
+    stack[pos]=i; pos=pos+1;
+    stack[pos]=2; pos=pos+1;
+    stack[pos]=ans; pos=pos+1;
+    i=i-1;
+    status=0;
+  }
+  else if(status==2)
+  {
+    returnval=ans+returnval;
+    if(pos==0) status=3;
+    else
+    {
+      ans=stack[pos=pos-1];  /*pop*/
+      status=stack[pos=pos-1];
+      i=stack[pos=pos-1];
+    }
+  }
+}
+print:"斐波拉切数列中第%d位是%d\n",i,returnval;
+i=i+1;
+}

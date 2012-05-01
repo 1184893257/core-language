@@ -64,6 +64,10 @@ space		[" "\t]
 "else"			return ELSE;
 
 "while"			return WHILE;
+
+"break"			return BREAK;
+
+"continue"		return CONTINUE;
 	
 ("_"|{char})({char}|"_"|{digit})*	{	//±êÊ¾·û
 		yylval=newID(yytext);
