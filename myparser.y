@@ -135,7 +135,7 @@ LTree errHandle()
 	errors++;
 	yyclearin();
 	yyerrok();
-	printf("line:%d:Óï·¨´íÎó\n",linenum+1);
+	printf("line:%d:<Óï·¨´íÎó>\n",linenum+1);
 	printf("%s\n%*s\n",linebuf,tokenpos-tokenleng+1,"^");
 	return newNOP();
 }

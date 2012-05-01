@@ -1,0 +1,7 @@
+int a;
+int b;
+bool d;
+
+a=a+b++b;
+/*int c;*/
+d=d+a;
