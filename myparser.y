@@ -7,7 +7,12 @@
 #include "execute.h"
 #define YYSTYPE LTree
 LTree root;			//语法树的根节点
-extern int linenum;
+
+extern int linenum;		//lex文件中定义的整型行号
+extern int tokenpos;	//lex中定义,行中位置
+extern int tokenleng;	//lex中定义,错误发生后是错误的那个记号的长度
+extern char linebuf[];	//缓存的源程序
+LTree errHandle();		//下面定义了,在单行语句错误的时候调用
 %}
 
 %token	ID				//变量名称
@@ -35,6 +40,8 @@ extern int linenum;
 %%
 //先声明语句,再是多条语句
 S:	D M	{root=buildTree(MAIN,buildTree(MULTI2,$2));}		//整棵语法树就诞生了O(∩_∩)O哈哈~
+	|error TYPE ID ';'			{printf("声明必须在最前面\n");errHandle();}
+	|error TYPE '[' ']' ID ';'	{printf("声明必须在最前面\n");errHandle();}
 	;
 	
 D:
@@ -59,27 +66,12 @@ Q:	I ';'	//整形或布尔运算
 	|W		//WHILE语句
 	|P		//print语句
 	|A 		//new数组
-//	//|error ER ';'	{fprintf(stderr,"line:%d:此行以上出现语法错误!",linenum);}		//这里进行错误处理
-	//|error	{printf("I catched a error");}		//这里进行错误处理
+	|error ';'	{$$=errHandle();}		//这里进行错误处理
+	|error '}'	{$$=errHandle();}
 	;
 	
 A:	ID '=' NEW '[' I ']' ';' 	{$$=newArray($1,$5);}
 	;
-	/*
-ER:	
-	|ER T
-	;
-
-//所有除分号外在单条语句中能出现的终结符,用于error吃掉
-T:	EQUAL|AND|OR|'!'	//布尔运算符
-	|'+'|'-'|'*'|'/'	//四则运算
-	|'<'|'>'
-	|'('|')'|'['|']'
-	|'='|':'|','
-	|TYPE					{printf("line:%d:声明语句必须放在最前面\n",linenum);}
-	|BOOL|NUM|ID|STRING
-	|PRINT|IF|ELSE
-	;*/
 
 //多行语句
 M:				{$$=NULL;}
@@ -133,6 +125,15 @@ ARGS:				{$$=NULL;}
 	;
 	
 %%
+
+LTree errHandle()
+{
+	yyclearin();
+	yyerrok();
+	printf("line:%d:语法错误\n",linenum+1);
+	printf("%s\n%*s\n",linebuf,tokenpos-tokenleng+1,"^");
+	return newNOP();
+}
 
 int main(void)
 {

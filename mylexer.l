@@ -3,7 +3,12 @@
 #include <string.h>
 #include "myparser.h"
 #include "struct.h"
-int linenum;
+
+int tokenpos;		//行中位置
+int tokenleng;		//获取的记号的长度,出错后不再更新
+int linenum;		//当前行号
+char linebuf[1024];	//当前行的内容(预读机制)
+
 extern LTree yylval;
 %}
 
@@ -12,9 +17,19 @@ char		[a-zA-Z]
 space		[" "\t]
 %x	comment
 %%
+	if(!YYRECOVERING){
+		tokenpos+=yyleng;	//出错后不递增,保持出错时的位置
+		tokenleng=yyleng;
+	}
+
 "/*"		BEGIN(comment);	//多行注释的互斥入口(没有单行注释O(∩_∩)O)
 
-\n				linenum++;	//行号递增,可用于语法检查
+\n.*			{
+		tokenpos=0;
+		strcpy(linebuf,yytext+1);
+		linenum++;
+		yyless(1);
+}
 
 {space}			;//吃掉空格和\t
 

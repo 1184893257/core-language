@@ -1,0 +1,55 @@
+/*排序,测试循环嵌套,语法是嵌套定义的,
+所以循环应该可以嵌套在循环之中的
+*/
+
+int size;
+int i;
+int j;
+int t;	/*用于交换的时候*/
+int []s;
+
+size=10;
+s=new [size];
+
+/*先给个逆序的,然后用插入排序进行排序*/
+i=0;
+while(i<size)
+{
+	s[i]=size-i;
+	i=i+1;
+}
+
+/*输出看看*/
+print:"排序前:";
+i=0;
+while(i<size)
+{
+	print:"%d,",s[i];
+	i=i+1;
+}
+print:"\n";
+
+/*插入排序*/
+i=0;
+while(i<size-1)
+{
+	j=i+1;
+	while(j>0 && s[j-1]>s[j])
+	{
+		t=s[j-1];
+		s[j-1]=s[j];
+		s[j]=t;
+		j=j-1;
+	}
+	i=i+1;
+}
+
+/*输出看看*/
+print:"排序后:";
+i=0;
+while(i<size)
+{
+	print:"%d,",s[i];
+	i=i+1;
+}
+print:"\n";
