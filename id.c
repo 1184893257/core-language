@@ -89,6 +89,13 @@ void generateVars()
 	clearlist();
 }
 
+//销毁变量空间
+void destroyVars()
+{
+	if(idheap) free(idheap);
+	idheap=NULL;
+}
+
 //对变量赋值
 void putvalue(LTree idTree, Type value)
 {
@@ -224,4 +231,9 @@ void arrayNewSize(LTree node)
 	p=(void**)(idheap+array->val.intval);
 	if(*p) free(*p);
 	*p=malloc(size);
+}
+
+void** getPoint(LTree array)
+{
+	return (void**)(idheap+array->val.intval);
 }

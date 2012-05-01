@@ -14,6 +14,9 @@ void refer(LTree idTree);
 //在执行之前生成变量的存储空间,将所有字节置0
 void generateVars();
 
+//销毁变量空间
+void destroyVars();
+
 //对有左值的变量赋值
 void putvalue(LTree idTree, Type value);
 
@@ -31,4 +34,7 @@ LTree newArray(LTree array, LTree size);
 
 //执行NEW节点,给数组重新申请空间
 void arrayNewSize(LTree node);
+
+//获得指向动态数组指针的指针,用以释放空间
+void** getPoint(LTree array);
 #endif

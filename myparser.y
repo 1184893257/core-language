@@ -5,6 +5,7 @@
 #include "id.h"
 #include "init.h"
 #include "execute.h"
+#include "finalize.h"
 #define YYSTYPE LTree
 LTree root;			//语法树的根节点
 
@@ -148,6 +149,7 @@ int main(void)
 		do_solve(root);
 	else
 		printf("检查出错误%d个,放弃执行语法树\n",errors);
+	finalize(root);
 	return 0;
 }
 
