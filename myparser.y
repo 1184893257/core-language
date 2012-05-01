@@ -12,12 +12,15 @@ extern int linenum;		//lex文件中定义的整型行号
 extern int tokenpos;	//lex中定义,行中位置
 extern int tokenleng;	//lex中定义,错误发生后是错误的那个记号的长度
 extern char linebuf[];	//缓存的源程序
+
+int errors;				//检查出的错误的个数
+
 LTree errHandle();		//下面定义了,在单行语句错误的时候调用
 %}
 
 %token	ID				//变量名称
 %token	NUM BOOL STRING		//这是常量类型
-%token	TBOOL INT ARRAY		//这都是变量类型,引入数组了
+%token	TBOOL INT ARRAY	NORETURN	//布尔变量类型, 整型, 数组型, 无返回值
 %token	EQUAL AND OR NEW	//多字符的操作符
 %token	IF ELSE WHILE		//由于识别分支，循环语句
 %token	NEG IFU IFF 		//用于识别负号、不完整if、完整if
@@ -40,8 +43,8 @@ LTree errHandle();		//下面定义了,在单行语句错误的时候调用
 %%
 //先声明语句,再是多条语句
 S:	D M	{root=buildTree(MAIN,buildTree(MULTI2,$2));}		//整棵语法树就诞生了O(∩_∩)O哈哈~
-	|error TYPE ID ';'			{printf("声明必须在最前面\n");errHandle();}
-	|error TYPE '[' ']' ID ';'	{printf("声明必须在最前面\n");errHandle();}
+	|error TYPE ID ';'			{printf("变量声明必须在最前面\n");errHandle();}
+	|error TYPE '[' ']' ID ';'	{printf("变量声明必须在最前面\n");errHandle();}
 	;
 	
 D:
@@ -128,6 +131,7 @@ ARGS:				{$$=NULL;}
 
 LTree errHandle()
 {
+	errors++;
 	yyclearin();
 	yyerrok();
 	printf("line:%d:语法错误\n",linenum+1);
@@ -140,7 +144,10 @@ int main(void)
 	init();			//与输入源程序无关的一些初始化
 	yyparse();		//建树, 生成根节点为root的语法树(在本文件最上面定义的全局变量)
 	generateVars();	//生成变量空间
-	do_solve(root);	//根据语法树解释执行源程序
+	if(errors==0)
+		do_solve(root);
+	else
+		printf("检查出错误%d个,放弃执行语法树\n",errors);
 	return 0;
 }
 

@@ -119,6 +119,7 @@ LTree newNOP()
 	LTree ans=(LTree)malloc(sizeof(Tree));
 	ans->type=NOP;
 	ans->bro=ans->chi=NULL;
+	ans->returnType=NORETURN;
 	return ans;
 }
 

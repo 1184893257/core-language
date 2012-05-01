@@ -54,7 +54,7 @@ void refer(LTree idTree)
 	LIdList t;
 
 	for(t=ids;t;t=t->next)
-		if(!strcmp(t->name,idTree->val.strval))
+		if(idTree->type!=ARRAY && !strcmp(t->name,idTree->val.strval))
 			break;
 
 	if(!t)
@@ -203,6 +203,7 @@ LTree newArray(LTree array, LTree size)
 	ans->bro=ans->chi=NULL;
 	array->bro=size;
 	ans->chi=array;
+	ans->returnType=ARRAY;
 	return ans;
 }
 
