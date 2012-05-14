@@ -1,6 +1,8 @@
 /Debug
 Corelanguage*
 *.v
+*.sh
+*.exe
 mylexer.c
 mylexer.h
 myparser.c
