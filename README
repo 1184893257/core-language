@@ -1,3 +1,9 @@
-<html>
-<b>sounds like to be bonded</b>
-</html>
+亮点:
+
+break continue(非循环中出现break和continue就报错,break continue匹配最近的循环)
+语法语义纠错(精确定位,语义错误,int变量+bool变量)
+动态数组(new 操作)
+复杂下标运算
+printf的翻版print(布尔的格式是%s)
+
+严格区分int和bool,几乎可以检查出程序的所有语义问题
