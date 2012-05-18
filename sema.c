@@ -77,7 +77,10 @@ static bool compatible(LTree *pc1,LTree *pc2)
 	if(!isNUM(c1) || !isNUM(c2)) return false;
 	if(c1->returnType==c2->returnType) return true;
 	if(c1->returnType==INT && c2->returnType==TDOUBLE)
+	{
 		*pc1=CHANGETO(c1,TDOUBLE);
+		c1->bro=NULL;
+	}
 	else if(c1->returnType==TDOUBLE && c2->returnType==INT)
 		*pc2=CHANGETO(c2,TDOUBLE);
 	return true;
@@ -90,7 +93,7 @@ void verifySema(LTree node)
 
 	switch(node->type)
 	{
-	case CHANGE:		//类型转换需调整一下树
+	case CHANGE:		//强制类型转换需调整一下树
 		c1=node->chi;
 		c2=c1->bro;
 		node->returnType=c1->type;

@@ -14,8 +14,8 @@ static type get##type##val(LTree tree)	\
 	type ans;					\
 	switch(tree->returnType)	\
 	{							\
-	case INT: ans=(type)t.intval;\
-	case TDOUBLE: ans=(type)t.doubleval;\
+	case INT: ans=(type)t.intval; break;\
+	case TDOUBLE: ans=(type)t.doubleval; break;\
 	}							\
 	return ans;					\
 }
