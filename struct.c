@@ -26,6 +26,16 @@ LTree newNUM(int num)
 	return ans;
 }
 
+LTree newDOUBLE(double val)
+{
+	LTree ans=(LTree)malloc(sizeof(Tree));
+	ans->type=DOUBLE;
+	ans->chi=ans->bro=NULL;
+	ans->returnType=TDOUBLE;
+	ans->val.doubleval=val;
+	return ans;
+}
+
 #define isnum(c) ('0'<=(c) && (c)<='9')
 #define ishex(c) (isnum(c)||('a'<=(c) && (c)<='f')||('A'<=(c) && (c)<='F'))
 #define tonum(c) ((c)-'0')

@@ -22,8 +22,9 @@ LTree errHandle();		//下面定义了,在单行语句错误的时候调用
 %}
 
 %token	ID				//变量名称
-%token	NUM BOOL STRING		//这是常量类型
-%token	TBOOL INT ARRAY	NORETURN	//布尔变量类型, 整型, 数组型, 无返回值
+%token	NUM BOOL STRING	DOUBLE	//这是常量类型
+%token	TDOUBLE TBOOL INT ARRAY	NORETURN	//布尔变量类型, 整型, 数组型, 无返回值
+%token	CHANGE				//类型转换操作
 %token	EQUAL AND OR NEW	//多字符的操作符
 %token	IF ELSE WHILE		//由于识别分支，循环语句
 %token	NEG IFU IFF 		//用于识别负号、不完整if、完整if
@@ -59,6 +60,7 @@ D:
  
 TYPE:INT	{$$=newTYPE(INT);}
 	|TBOOL	{$$=newTYPE(TBOOL);}
+	|TDOUBLE	{$$=newTYPE(TDOUBLE);}
 	;
 
 /*3种语句块:空语句(只有一个分号), 单行语句, 多行语句, 
@@ -97,13 +99,15 @@ I:	ID '=' I		{refer($1); $$=buildTree('=',$1,$3);}	//变量左值
 	|ID '[' I ']'	{referArray($1,$3);}
 	|V				{refer($1);}
 
-	//返回值为整形的语句
+	//返回值为数值型的语句
 	|I '+' I	    {$$=buildTree('+',$1,$3);}
 	|I '-' I		{$$=buildTree('-',$1,$3);}
 	|I '*' I		{$$=buildTree('*',$1,$3);}
 	|I '/' I		{$$=buildTree('/',$1,$3);}
 	|'(' I ')'		{$$=$2;}
+	|'(' TYPE ')' I	%prec uminus		{$$=buildTree(CHANGE,$2,$4);}
 	|NUM			{$$=$1;}
+	|DOUBLE			{$$=$1;}
 	|'-' I			%prec uminus		{$$=buildTree(NEG,$2);}
 	
 	//返回值为布尔的语句

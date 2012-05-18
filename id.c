@@ -43,6 +43,8 @@ void declare(LTree type, LTree name)
 	case INT:
 	case STRING:
 		size+=sizeof(int); break;
+	case TDOUBLE:
+		size+=sizeof(double); break;
 	}
 	free(type);
 	free(name);
@@ -106,6 +108,8 @@ void putvalue(LTree idTree, Type value)
 		*(int *)(idheap+idTree->val.intval)=value.intval; break;
 	case TBOOL:
 		*(bool *)(idheap+idTree->val.intval)=value.boolval; break;
+	case TDOUBLE:
+		*(double *)(idheap+idTree->val.intval)=value.doubleval; break;
 	case ARRAY:
 		offset=do_solve(idTree->chi).intval;
 		switch(idTree->type2)
@@ -114,6 +118,8 @@ void putvalue(LTree idTree, Type value)
 			*(*((int **)(idheap+idTree->val.intval))+offset)=value.intval; break;
 		case TBOOL:
 			*(*((bool **)(idheap+idTree->val.intval))+offset)=value.boolval; break;
+		case TDOUBLE:
+			*(*((double **)(idheap+idTree->val.intval))+offset)=value.doubleval; break;
 		}
 		break;
 	}
@@ -131,6 +137,8 @@ Type getvalue(LTree idTree)
 		ans.intval=*(int *)(idheap+idTree->val.intval); break;
 	case TBOOL:
 		ans.boolval=*(bool *)(idheap+idTree->val.intval); break;
+	case TDOUBLE:
+		ans.doubleval=*(double *)(idheap+idTree->val.intval); break;
 	case ARRAY:
 		offset=do_solve(idTree->chi).intval;
 		switch(idTree->type2)
@@ -139,6 +147,8 @@ Type getvalue(LTree idTree)
 			ans.intval=*(*((int **)(idheap+idTree->val.intval))+offset); break;
 		case TBOOL:
 			ans.boolval=*(*((bool **)(idheap+idTree->val.intval))+offset); break;
+		case TDOUBLE:
+			ans.doubleval=*(*((double **)(idheap+idTree->val.intval))+offset); break;
 		}
 		break;
 	}
@@ -226,6 +236,8 @@ void arrayNewSize(LTree node)
 	{
 	case INT: case TBOOL:
 		size*=sizeof(int); break;
+	case TDOUBLE:
+		size*=sizeof(double); break;
 	}
 
 	p=(void**)(idheap+array->val.intval);

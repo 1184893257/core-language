@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "sema.h"
 #include "myparser.h"
 
@@ -51,6 +52,37 @@ static char* findOp(int type)
 	return s;
 }
 
+//判断树的返回值是不是数值型的
+static bool isNUM(LTree node)
+{
+	int type=node->returnType;
+	return type==INT || type==TDOUBLE;
+}
+
+//加个类型转换节点
+static LTree CHANGETO(LTree node,int type)
+{
+	LTree ans=(LTree)malloc(sizeof(Tree));
+	ans->bro=NULL;
+	ans->type=CHANGE;
+	ans->returnType=type;
+	ans->chi=node;
+	return ans;
+}
+
+//数值型的树兼容转换
+static bool compatible(LTree *pc1,LTree *pc2)
+{
+	LTree c1=*pc1,c2=*pc2;
+	if(!isNUM(c1) || !isNUM(c2)) return false;
+	if(c1->returnType==c2->returnType) return true;
+	if(c1->returnType==INT && c2->returnType==TDOUBLE)
+		*pc1=CHANGETO(c1,TDOUBLE);
+	else if(c1->returnType==TDOUBLE && c2->returnType==INT)
+		*pc2=CHANGETO(c2,TDOUBLE);
+	return true;
+}
+
 void verifySema(LTree node)
 {
 	LTree c1,c2;
@@ -58,6 +90,14 @@ void verifySema(LTree node)
 
 	switch(node->type)
 	{
+	case CHANGE:		//类型转换需调整一下树
+		c1=node->chi;
+		c2=c1->bro;
+		node->returnType=c1->type;
+		node->chi=c2;
+		free(c1);
+		break;
+
 	case MAIN: case MULTI2:	case PRINT:	//这种树不检查,语法通过了语义就没问题
 		break;
 
@@ -77,8 +117,16 @@ void verifySema(LTree node)
 		c2=c1->bro;
 		if(c1->returnType!=c2->returnType)	//除了new其他运算中数组出现的格式都是id[I]
 		{									//(id都被当做变量而非数组来检索,如果是数组就会报告找不到变量)
-			sprintf(info,"%s类型不能赋值为%s类型",findType(c1->returnType),findType(c2->returnType));
-			warn();
+			if(isNUM(c1) && isNUM(c2))//还可以挽救
+			{
+				c2=CHANGETO(c2,c1->returnType);
+				c1->bro=c2;
+			}
+			else
+			{
+				sprintf(info,"%s类型不能赋值为%s类型",findType(c1->returnType),findType(c2->returnType));
+				warn();
+			}
 		}
 		node->returnType=c1->returnType;
 		break;
@@ -87,12 +135,17 @@ void verifySema(LTree node)
 	case '+': case '-': case '*': case '/': case '<': case '>':
 		c1=node->chi;
 		c2=c1->bro;
-		if(c1->returnType!=INT || c2->returnType!=INT)
+		if(!compatible(&c1,&c2))
 		{
 			sprintf(info,"%c运算不能应用于%s类型与%s类型",node->type,findType(c1->returnType),findType(c2->returnType));
 			warn();
 		}
-		node->returnType=(node->type=='<' || node->type=='>') ? TBOOL : INT;
+		else
+		{
+			node->chi=c1;
+			c1->bro=c2;
+		}
+		node->returnType=(node->type=='<' || node->type=='>') ? TBOOL : c1->returnType;
 		break;
 
 	//单元运算检查

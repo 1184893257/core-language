@@ -18,9 +18,10 @@ static int buildArgs(LTree bro, char **args)
 		switch(t->returnType)
 		{
 		case INT: case TBOOL:
-			size+=4; break;
+			size+=sizeof(int); break;
+		case TDOUBLE:
+			size+=sizeof(double); break;
 		}
-	size=(size+3)&(~3);		//À©ÈÝÎª4µÄ±¶Êý
 	ans=(char *)malloc(size);
 	for(t=bro;t;t=t->bro)
 		switch(t->returnType)
@@ -34,6 +35,11 @@ static int buildArgs(LTree bro, char **args)
 			re=do_solve(t);
 			*(char **)(ans+pos)=re.boolval==false ? "false" : "true";
 			pos+=4;
+			break;
+		case TDOUBLE:
+			re=do_solve(t);
+			*(double *)(ans+pos)=re.doubleval;
+			pos+=sizeof(double);
 			break;
 		}
 	*args=ans;

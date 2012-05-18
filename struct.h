@@ -14,6 +14,7 @@ typedef union
 {
 	int intval;
 	bool boolval;
+	double doubleval;
 	char *strval;
 }Type;
 
@@ -28,22 +29,30 @@ typedef struct treenode
 	struct treenode *chi;	//(缩写children)孩子, 是第一个孩子, 他可能还有兄弟
 }Tree,*LTree;
 
-//树中只有两种叶子:常量、ID
+
+//常量型的叶子
 //建立布尔常量叶子
 LTree newBOOL(bool val);
 
 //建立NUM常量叶子
 LTree newNUM(int num);
 
+//建立浮点数常量叶子
+LTree newDOUBLE(double val);
+
 //建立STRING常量叶子
 LTree newSTRING(const char *name);
 
+
+//建立变量相关的叶子
 //建立ID叶子
 LTree newID(char *name);
 
 //只是用于声明的时候统一代码,临时建立的树
 LTree newTYPE(int type);
 
+
+//控制相关的叶子
 //建立一颗不含语义的树,只是为了连接与它平行的语法树,也用于替换错误的语法树
 LTree newNOP();
 

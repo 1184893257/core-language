@@ -57,6 +57,8 @@ space		[" "\t]
 
 "bool"			return TBOOL;
 
+"double"		return TDOUBLE;
+
 "print"			return PRINT;
 
 "if"			return IF;
@@ -77,6 +79,13 @@ space		[" "\t]
 {digit}+		{			//数字常量
 		yylval=newNUM(atoi(yytext));
 		return NUM;
+	}
+
+{digit}+(\.{digit}+)?([eE][+-]?{digit}+)?	{//浮点数
+		double t;
+		sscanf(yytext,"%lf",&t);
+		yylval=newDOUBLE(t);
+		return DOUBLE;
 	}
 	
 \"([^\\\"]|\\.)*\"	{		//字符串常量,只在print中被用到

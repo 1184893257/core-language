@@ -1,0 +1,4 @@
+int a;
+
+a=(int)(11.2);
+print:"%d\n",a;

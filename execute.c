@@ -7,6 +7,22 @@
 static bool breaksig;		//break信号
 static bool continuesig;	//continue信号
 
+#define getval(type)			\
+static type get##type##val(LTree tree)	\
+{								\
+	Type t=do_solve(tree);		\
+	type ans;					\
+	switch(tree->returnType)	\
+	{							\
+	case INT: ans=(type)t.intval;\
+	case TDOUBLE: ans=(type)t.doubleval;\
+	}							\
+	return ans;					\
+}
+
+getval(int)
+getval(double)
+
 Type do_solve(LTree root)
 {
 	Type ans,t1,t2;
@@ -14,6 +30,15 @@ Type do_solve(LTree root)
 
 	switch(root->type)
 	{
+	case CHANGE:
+		c1=root->chi;
+		switch(root->returnType)
+		{
+		case INT: ans.intval=getintval(c1); break;
+		case TDOUBLE: ans.doubleval=getdoubleval(c1); break;
+		}
+		break;
+
 	//NOP
 	case NOP: break;	//直接被忽略了
 
@@ -84,11 +109,11 @@ Type do_solve(LTree root)
 		print(root); break;
 
 	//常量
-	case NUM: case BOOL:
+	case NUM: case BOOL: case DOUBLE:
 		ans=root->val; break;
 
 	//变量读值
-	case INT: case TBOOL: case ARRAY:
+	case INT: case TBOOL: case TDOUBLE: case ARRAY:
 		ans=getvalue(root); break;
 
 	//赋值
@@ -110,6 +135,23 @@ Type do_solve(LTree root)
 		}
 		break;
 
+	//短路计算与和或
+	case AND: case OR:
+		c1=root->chi;
+		c2=c1->bro;
+		t1=do_solve(c1);
+		if(root->type==AND)
+		{
+			if(t1.boolval==false) ans.boolval=false;
+			else ans.boolval=do_solve(c2).boolval;
+		}
+		else
+		{
+			if(t1.boolval==true) ans.boolval=true;
+			else ans.boolval=do_solve(c2).boolval;
+		}
+		break;
+
 	//双元运算符
 	default:
 		c1=root->chi;
@@ -118,16 +160,35 @@ Type do_solve(LTree root)
 		t2=do_solve(c2);
 		switch(root->type)
 		{
-		case '+': ans.intval=t1.intval+t2.intval; break;
-		case '-': ans.intval=t1.intval-t2.intval; break;
-		case '*': ans.intval=t1.intval*t2.intval; break;
-		case '/': ans.intval=t1.intval/t2.intval; break;
+		case '+':
+			if(root->returnType==INT) ans.intval=t1.intval+t2.intval;
+			else if(root->returnType==TDOUBLE) ans.doubleval=t1.doubleval+t2.doubleval;
+			break;
+		case '-':
+			if(root->returnType==INT) ans.intval=t1.intval-t2.intval;
+			else if(root->returnType==TDOUBLE) ans.doubleval=t1.doubleval-t2.doubleval;
+			break;
+		case '*':
+			if(root->returnType==INT) ans.intval=t1.intval*t2.intval;
+			else if(root->returnType==TDOUBLE) ans.doubleval=t1.doubleval*t2.doubleval;
+			break;
+		case '/':
+			if(root->returnType==INT) ans.intval=t1.intval/t2.intval;
+			else if(root->returnType==TDOUBLE) ans.doubleval=t1.doubleval/t2.doubleval;
+			break;
 
-		case EQUAL: ans.boolval=t1.intval==t2.intval; break;
-		case AND: ans.boolval=t1.boolval && t2.boolval; break;
-		case OR: ans.boolval=t1.boolval || t2.boolval; break;
-		case '<': ans.boolval=t1.intval < t2.intval; break;
-		case '>': ans.boolval=t1.intval > t2.intval; break;
+		case EQUAL: 
+			if(c1->returnType==INT) ans.boolval=t1.intval==t2.intval;
+			else if(c1->returnType==TDOUBLE) ans.boolval=t1.doubleval==t2.doubleval;
+			break;
+		case '<':
+			if(c1->returnType==INT) ans.boolval=t1.intval < t2.intval;
+			else if(c1->returnType==TDOUBLE) ans.boolval=t1.doubleval < t2.doubleval;
+			break;
+		case '>':
+			if(c1->returnType==INT) ans.boolval=t1.intval > t2.intval;
+			else if(c1->returnType==TDOUBLE) ans.boolval=t1.doubleval > t2.doubleval;
+			break;
 		default:
 			fprintf(stderr,"错误的操作符:%d\n",root->type); break;
 		}
